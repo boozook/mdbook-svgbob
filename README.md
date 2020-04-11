@@ -1,10 +1,8 @@
 # Svgbob plugin for mdbook
 
+[![Crate current version badge](https://img.shields.io/crates/v/mdbook-svgbob.svg)](https://crates.io/crates/mdbook-svgbob)
 ![](https://github.com/fzzr-/mdbook-svgbob/workflows/Tests/badge.svg)
 ![](https://github.com/fzzr-/mdbook-svgbob/workflows/Audit/badge.svg)
-<a href="https://crates.io/crates/mdbook-svgbob">
-<img src="https://img.shields.io/crates/v/mdbook-svgbob.svg" alt="current version badge" title="current version badge">
-</a>
 
 [Svgbob][]-based preprocessor for [mdbook][] transform your ascii diagrams into a svg.
 

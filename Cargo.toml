@@ -3,8 +3,18 @@ name = "mdbook-svgbob"
 version = "0.1.0"
 authors = ["Alex Koz. <a@koz.email>"]
 description = "SvgBob mdbook preprocessor which swaps code-blocks with neat SVG."
-homepage = "https://github.com/"
+homepage = "https://nest.pijul.com/fzzr/mdbook-svgbob"
+repository = "https://github.com/fzzr-/mdbook-svgbob.git"
+keywords = ["mdbook", "markdown", "ascii", "svg", "bob"]
+categories = ["command-line-utilities", "text-processing", "visualization"]
+
 edition = "2018"
+
+license-file = "LICENSE"
+include = ["src/**/*", "Cargo.toml", "README.md"]
+
+[badges]
+maintenance = { status = "passively-maintained" }
 
 [dependencies]
 mdbook = "0.3"
