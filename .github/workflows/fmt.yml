@@ -1,0 +1,42 @@
+name: Format
+on:
+  pull_request:
+  push:
+    branches:
+    - master
+
+jobs:
+  rust:
+    name: rustfmt
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+        - macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1.0.6
+      with:
+        toolchain: nightly
+        profile: minimal
+        components: rustfmt
+        override: false
+        allow-downgrade: false
+
+    - name: Restore cargo cache from cache
+      uses: actions/cache@v1
+      with:
+        path: ~/.cargo
+        key: ${{ runner.os }}-cargo
+        restore-keys: |
+          ${{ runner.os }}-cargo
+
+    - name: Check formatting
+      shell: bash
+      run: cargo +nightly fmt -- --check

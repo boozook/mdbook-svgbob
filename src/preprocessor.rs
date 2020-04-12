@@ -26,7 +26,7 @@ impl Bob {
 		if ctx.mdbook_version != mdbook::MDBOOK_VERSION && !built.matches(&current) {
 			warn!(
 			      "The {} plugin was built against version {} of mdbook, \
-						but we're being called from version {}, so may be incompatible.",
+				      but we're being called from version {}, so may be incompatible.",
 			      self.name(),
 			      mdbook::MDBOOK_VERSION,
 			      ctx.mdbook_version
@@ -84,7 +84,7 @@ fn process_code_blocks(chapter: &mut Chapter, settings: &Settings) -> Result<Str
 		                                          use CodeBlockKind::*;
 		                                          use Tag::{CodeBlock, Paragraph};
 
-		                                          let new_event = match (&e, &mut state) {
+		                                          match (&e, &mut state) {
 			                                          (Start(CodeBlock(Fenced(Borrowed("bob")))), None) => {
 			                                             state = Open;
 			                                             Some(Start(Paragraph))
@@ -100,8 +100,7 @@ fn process_code_blocks(chapter: &mut Chapter, settings: &Settings) -> Result<Str
 			                                             Some(End(Paragraph))
 		                                             },
 		                                             _ => Some(e),
-		                                          };
-		                                          new_event
+		                                          }
 	                                          })
 	                                          .filter_map(|e| e);
 	cmark(events, &mut buf, None).map(|_| buf)

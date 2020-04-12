@@ -745,7 +745,7 @@ dependencies = [
  "semver",
  "serde",
  "serde_json",
- "svg 0.7.1",
+ "svg 0.7.2",
  "svgbob",
  "toml",
 ]
@@ -1535,9 +1535,9 @@ checksum = "a863ec1f8e7cfd4ea449f77445cca06aac240b9a677ccf12b0f65ef020db52c7"
 
 [[package]]
 name = "svg"
-version = "0.7.1"
+version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "99bfc4e5077d9047fe8a5cbeb22f0164251e015f85480599892060c07a4e853f"
+checksum = "3685c82a045a6af0c488f0550b0f52b4c77d2a52b0ca8aba719f9d268fa96965"
 
 [[package]]
 name = "svgbob"

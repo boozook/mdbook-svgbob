@@ -12,7 +12,7 @@
 
 ### Prerequisites
 
-- [Rust][] toolchain, the easiest and canonical way is to use [Rustup][]
+- Install [Rust][] toolchain via [Rustup][]
 - [mdbook][], just run `cargo install mdbook`
 
 
@@ -24,10 +24,19 @@ Get latest release:
 cargo install mdbook-svgbob
 ```
 
-Or install from repo:
+Or install from the git mirror:
 
 ```bash
 cargo install --git https://github.com/fzzr-/mdbook-svgbob.git
+```
+
+If you want to contribute I recommend to get sources from pj repo:
+
+```bash
+# install pijul if needed
+cargo install pijul
+pijul clone nest.pijul.com:fzzr/mdbook-svgbob
+cargo install --path mdbook-svgbob
 ```
 
 
@@ -74,7 +83,7 @@ For more information about mdbook see [mdbook manual][mdbook.manual],
 [svgbob spec][svgbob.spec] and [editor][svgbob.editor].
 
 
-## Configuration
+## Contribution
 
 Contributions are highly appreciated and encouraged!
 Don't hesitate to participate to discussions in the issues, propose new features and ask for help.

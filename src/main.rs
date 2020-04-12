@@ -19,7 +19,6 @@ pub type Result<Ok = (), Err = Box<dyn Error>> = std::result::Result<Ok, Err>;
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
 const NAME: &str = env!("CARGO_PKG_NAME");
-// const DESCRIPTION_SHORT: &str = env!("CARGO_PKG_DESCRIPTION");
 const DESCRIPTION: &str = concat!(env!("CARGO_PKG_DESCRIPTION"), "\n", env!("CARGO_PKG_HOMEPAGE"));
 
 

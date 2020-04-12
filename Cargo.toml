@@ -10,6 +10,7 @@ categories = ["command-line-utilities", "text-processing", "visualization"]
 
 edition = "2018"
 
+readme = "README.md"
 license-file = "LICENSE"
 include = ["src/**/*", "Cargo.toml", "README.md"]
 
