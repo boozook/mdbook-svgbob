@@ -11,7 +11,9 @@ categories = ["command-line-utilities", "text-processing", "visualization"]
 edition = "2018"
 
 readme = "README.md"
+license = "MPL-2.0"
 license-file = "LICENSE"
+
 include = ["src/**/*", "Cargo.toml", "README.md"]
 
 [badges]
