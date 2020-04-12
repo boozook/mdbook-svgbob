@@ -1,6 +1,6 @@
 [package]
 name = "mdbook-svgbob"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Alex Koz. <a@koz.email>"]
 description = "SvgBob mdbook preprocessor which swaps code-blocks with neat SVG."
 homepage = "https://nest.pijul.com/fzzr/mdbook-svgbob"
