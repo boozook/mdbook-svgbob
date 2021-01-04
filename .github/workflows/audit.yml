@@ -19,7 +19,6 @@ jobs:
         - windows-latest
 
     env:
-      RUSTFLAGS: -D warnings
       RUST_BACKTRACE: full
       CARGO_INCREMENTAL: 1
       RUSTUP_MAX_RETRIES: 10
