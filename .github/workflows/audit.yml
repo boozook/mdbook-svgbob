@@ -41,4 +41,4 @@ jobs:
           ${{ runner.os }}-cargo
 
     - name: Run cargo-audit
-      run: cargo audit --deny warnings
+      run: cargo audit
