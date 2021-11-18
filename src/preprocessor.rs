@@ -102,7 +102,7 @@ fn process_code_blocks(chapter: &mut Chapter, settings: &Settings) -> Result<Str
 		                                             _ => Some(e),
 		                                          }
 	                                          })
-	                                          .filter_map(|e| e);
+	                                          .flatten();
 	cmark(events, &mut buf, None).map(|_| buf)
 }
 

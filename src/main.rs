@@ -43,7 +43,7 @@ fn main() -> Result {
 	// handle supports or processsing:
 	if let Some(sub_args) = opts.subcommand_matches("supports") {
 		let renderer = sub_args.value_of("renderer").expect("Required argument");
-		let supported = bob.supports_renderer(&renderer);
+		let supported = bob.supports_renderer(renderer);
 
 		// Signal whether the renderer is supported by exiting with 1 or 0.
 		if supported {
