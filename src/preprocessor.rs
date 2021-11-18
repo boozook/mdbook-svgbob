@@ -67,7 +67,7 @@ impl Preprocessor for Bob {
 /// Find code-blocks \`\`\`bob, produce svg and place it instead code.
 fn process_code_blocks(chapter: &mut Chapter, settings: &Settings) -> Result<String, std::fmt::Error> {
 	use pulldown_cmark::{Parser, CodeBlockKind, Event, CowStr, Tag};
-	use pulldown_cmark_to_cmark::fmt::cmark;
+	use pulldown_cmark_to_cmark::cmark;
 
 	enum State {
 		None,
@@ -118,6 +118,6 @@ mod tests {
 		let result = process_code_blocks(&mut chapter, &settings).unwrap();
 		assert!(result.contains("<svg"));
 		assert!(result.contains("<line"));
-		assert!(result.contains("#triangle"));
+		assert!(result.contains("#arrow"));
 	}
 }
