@@ -8,7 +8,7 @@ repository = "https://github.com/fzzr-/mdbook-svgbob.git"
 keywords = ["mdbook", "markdown", "ascii", "svg", "bob"]
 categories = ["command-line-utilities", "text-processing", "visualization"]
 
-edition = "2018"
+edition = "2021"
 
 readme = "README.md"
 license-file = "LICENSE"
