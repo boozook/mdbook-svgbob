@@ -1,7 +1,4 @@
-extern crate pulldown_cmark;
-extern crate pulldown_cmark_to_cmark;
-extern crate semver;
-
+use log::{error, warn, trace};
 use mdbook::book::{Book, BookItem, Chapter};
 use mdbook::errors::Error;
 use mdbook::preprocess::{CmdPreprocessor, Preprocessor, PreprocessorContext};

@@ -1,7 +1,3 @@
-extern crate svg;
-extern crate svgbob;
-extern crate toml;
-
 use serde::Deserialize;
 use svg::node::element::Style;
 pub use svgbob::Settings;
@@ -29,7 +25,7 @@ pub fn cfg_to_settings(cfg: &CfgMap) -> Settings {
 
 fn cfg_prop_or<'de, T: Deserialize<'de>>(cfg: &CfgMap, key: &str, def: T) -> T {
     cfg.get(key)
-        .map(|v| v.clone().try_into().map_err(|err| error!("{}", err)).ok())
+        .map(|v| v.clone().try_into().map_err(|err| log::error!("{}", err)).ok())
         .flatten()
         .unwrap_or(def)
 }

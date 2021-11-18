@@ -1,9 +1,3 @@
-#[macro_use]
-extern crate log;
-extern crate clap;
-extern crate env_logger;
-extern crate mdbook;
-
 use std::error::Error;
 use std::process;
 
@@ -55,7 +49,7 @@ fn main() -> Result {
             process::exit(1);
         }
     } else if let Err(e) = bob.handle_preprocessing() {
-        error!("{}", e);
+        log::error!("{}", e);
         process::exit(1);
     }
     Ok(())
