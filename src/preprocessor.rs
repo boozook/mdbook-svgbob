@@ -1,10 +1,10 @@
-use log::{error, warn, trace};
+use anyhow::Result;
+use log::{error, trace, warn};
 use mdbook::book::{Book, BookItem, Chapter};
 use mdbook::errors::Error;
 use mdbook::preprocess::{CmdPreprocessor, Preprocessor, PreprocessorContext};
 
 use crate::svgbob::*;
-use crate::Result;
 
 /// Svgbob preprocessor for mdbook.
 pub struct Bob;
@@ -14,7 +14,7 @@ impl Bob {
         Self
     }
 
-    pub fn handle_preprocessing(&self) -> Result {
+    pub fn handle_preprocessing(&self) -> Result<()> {
         use semver::{Version, VersionReq};
         use std::io::{stdin, stdout};
 

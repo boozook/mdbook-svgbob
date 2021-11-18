@@ -1,13 +1,11 @@
-use std::error::Error;
 use std::process;
 
+use anyhow::{Context, Result};
 use clap::{App, Arg, ArgMatches, SubCommand};
 use mdbook::preprocess::Preprocessor;
 
 mod preprocessor;
 mod svgbob;
-
-pub type Result<Ok = (), Err = Box<dyn Error>> = std::result::Result<Ok, Err>;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 const AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
@@ -19,7 +17,7 @@ const DESCRIPTION: &str = concat!(
 );
 
 pub fn init_cli() -> Result<ArgMatches<'static>> {
-    env_logger::try_init()?;
+    env_logger::try_init().with_context(|| "failed to initialize logger")?;
 
     Ok(App::new(NAME)
         .version(VERSION)
@@ -33,8 +31,8 @@ pub fn init_cli() -> Result<ArgMatches<'static>> {
         .get_matches())
 }
 
-fn main() -> Result {
-    let opts = init_cli()?;
+fn main() -> Result<()> {
+    let opts = init_cli().with_context(|| "failed to initialize cli")?;
     let bob = preprocessor::Bob::new();
 
     // handle supports or processsing:
