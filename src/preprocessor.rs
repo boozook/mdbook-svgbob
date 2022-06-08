@@ -67,7 +67,7 @@ impl Preprocessor for Bob {
 /// Find code-blocks \`\`\`bob, produce svg and place it instead code.
 fn process_code_blocks(chapter: &mut Chapter, settings: &Settings) -> Result<String, std::fmt::Error> {
 	use pulldown_cmark::{Parser, CodeBlockKind, Event, CowStr, Tag};
-	use pulldown_cmark_to_cmark::fmt::cmark;
+	use pulldown_cmark_to_cmark::cmark;
 
 	enum State {
 		None,
@@ -103,7 +103,7 @@ fn process_code_blocks(chapter: &mut Chapter, settings: &Settings) -> Result<Str
 		                                          }
 	                                          })
 	                                          .filter_map(|e| e);
-	cmark(events, &mut buf, None).map(|_| buf)
+	cmark(events, &mut buf).map(|_| buf)
 }
 
 
