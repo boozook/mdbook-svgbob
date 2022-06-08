@@ -111,7 +111,7 @@ fn process_code_blocks(
             }
         })
         .flatten();
-    cmark(events, &mut buf, None).map(|_| buf)
+    cmark(events, &mut buf).map(|_| buf)
 }
 
 #[cfg(test)]

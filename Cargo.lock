@@ -877,11 +877,10 @@ name = "mdbook-svgbob"
 version = "0.1.1"
 dependencies = [
  "anyhow",
- "clap",
  "env_logger 0.9.0",
  "log",
  "mdbook",
- "pulldown-cmark 0.8.0",
+ "pulldown-cmark 0.9.1",
  "pulldown-cmark-to-cmark",
  "semver",
  "serde",
@@ -1438,9 +1437,9 @@ dependencies = [
 
 [[package]]
 name = "pulldown-cmark"
-version = "0.8.0"
+version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ffade02495f22453cd593159ea2f59827aae7f53fa8323f756799b670881dcf8"
+checksum = "34f197a544b0c9ab3ae46c359a7ec9cbbb5c7bf97054266fecb7ead794a181d6"
 dependencies = [
  "bitflags",
  "getopts",
@@ -1450,11 +1449,11 @@ dependencies = [
 
 [[package]]
 name = "pulldown-cmark-to-cmark"
-version = "6.0.4"
+version = "10.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f5925e2c68fb0c3c189cd0f6bbcf1e16402a070d4fcaf7600e239e8302dd0e8"
+checksum = "3eafb76310f7dc895b5d83d24f2a00e244fc8a68ef94f4257eb4060984d0385f"
 dependencies = [
- "pulldown-cmark 0.8.0",
+ "pulldown-cmark 0.9.1",
 ]
 
 [[package]]
