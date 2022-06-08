@@ -8,7 +8,8 @@ type CfgMap = Map<String, Value>;
 
 pub fn cfg_to_settings(cfg: &CfgMap) -> Settings {
     Settings {
-        font_size: cfg_prop_or(cfg, "font_size", 14),
+
+        font_size: cfg_prop_or(cfg, "font_size", 14 as usize),
         font_family: cfg_prop_or(cfg, "font_family", "arial".to_owned()),
         fill_color: cfg_prop_or(cfg, "fill_color", "black".to_owned()),
         background: cfg_prop_or(cfg, "background", "transparent".to_owned()),
