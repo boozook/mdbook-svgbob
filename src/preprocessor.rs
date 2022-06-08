@@ -80,7 +80,10 @@ fn process_code_blocks(
 fn process_code_blocks(chapter: &mut Chapter, settings: &Settings) -> Result<String, std::fmt::Error> {
 	use pulldown_cmark::{Parser, CodeBlockKind, Event, CowStr, Tag};
 	use pulldown_cmark_to_cmark::cmark;
+<<<<<<< HEAD
 >>>>>>> 393246c (bumped libraries, fixed minor breaking change)
+=======
+>>>>>>> master
 
     enum State {
         None,
@@ -129,7 +132,10 @@ fn process_code_blocks(chapter: &mut Chapter, settings: &Settings) -> Result<Str
 	                                          })
 	                                          .filter_map(|e| e);
 	cmark(events, &mut buf).map(|_| buf)
+<<<<<<< HEAD
 >>>>>>> 393246c (bumped libraries, fixed minor breaking change)
+=======
+>>>>>>> master
 }
 
 #[cfg(test)]
@@ -138,6 +144,7 @@ mod tests {
     fn process_code_blocks() {
         use super::{process_code_blocks, Chapter, Settings};
 
+<<<<<<< HEAD
         let settings = Settings::default();
         let mut chapter = Chapter::new(
             "test",
@@ -150,4 +157,14 @@ mod tests {
         assert!(result.contains("<line"));
         assert!(result.contains("#arrow"));
     }
+=======
+		let settings = Settings::default();
+		let mut chapter = Chapter::new("test", "```bob\n-->\n```".to_owned(), ".", Vec::with_capacity(0));
+		let result = process_code_blocks(&mut chapter, &settings).unwrap();
+		assert!(result.contains("<svg"));
+		assert!(result.contains("<line"));
+		assert!(result.contains("<polygon"));		// note: svgbob @ release 0.5.5 no longer outputs #triangle
+		//	assert!(result.contains("#triangle"));
+	}
+>>>>>>> master
 }

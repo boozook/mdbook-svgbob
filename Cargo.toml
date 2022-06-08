@@ -18,8 +18,13 @@ include = ["src/**/*", "Cargo.toml", "README.md"]
 maintenance = { status = "passively-maintained" }
 
 [dependencies]
+<<<<<<< HEAD
 mdbook = "0.4.13"
 svgbob = "0.6.2"
+=======
+mdbook = "0.4.18"
+svgbob = "0.6.6"
+>>>>>>> master
 svg = "0.10.0"
 
 anyhow = "1.0.45"
