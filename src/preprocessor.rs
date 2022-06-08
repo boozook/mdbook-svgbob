@@ -69,12 +69,18 @@ impl Preprocessor for Bob {
 }
 
 /// Find code-blocks \`\`\`bob, produce svg and place it instead code.
+<<<<<<< HEAD
 fn process_code_blocks(
     chapter: &mut Chapter,
     settings: &Settings,
 ) -> Result<String, std::fmt::Error> {
     use pulldown_cmark::{CodeBlockKind, CowStr, Event, Parser, Tag};
     use pulldown_cmark_to_cmark::cmark;
+=======
+fn process_code_blocks(chapter: &mut Chapter, settings: &Settings) -> Result<String, std::fmt::Error> {
+	use pulldown_cmark::{Parser, CodeBlockKind, Event, CowStr, Tag};
+	use pulldown_cmark_to_cmark::cmark;
+>>>>>>> 393246c (bumped libraries, fixed minor breaking change)
 
     enum State {
         None,
@@ -103,6 +109,7 @@ fn process_code_blocks(
                     Some(Html(bob_handler(text, settings).into()))
                 }
 
+<<<<<<< HEAD
                 (End(CodeBlock(Fenced(Borrowed("bob")))), Closing) => {
                     state = None;
                     Some(End(Paragraph))
@@ -112,6 +119,17 @@ fn process_code_blocks(
         })
         .flatten();
     cmark(events, &mut buf, None).map(|_| buf)
+=======
+		                                             (End(CodeBlock(Fenced(Borrowed("bob")))), Closing) => {
+			                                             state = None;
+			                                             Some(End(Paragraph))
+		                                             },
+		                                             _ => Some(e),
+		                                          }
+	                                          })
+	                                          .filter_map(|e| e);
+	cmark(events, &mut buf).map(|_| buf)
+>>>>>>> 393246c (bumped libraries, fixed minor breaking change)
 }
 
 #[cfg(test)]
