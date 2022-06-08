@@ -64,6 +64,7 @@ fn cfg_prop_or<'de, T: Deserialize<'de>>(cfg: &CfgMap, key: &str, def: T) -> T {
 /// convert bob ascii diagrams to svg
 pub fn bob_handler(s: &str, settings: &Settings) -> String {
 <<<<<<< HEAD
+<<<<<<< HEAD
     let cb = CellBuffer::from(s);
     let (node, _width, height): (Node<()>, f32, f32) = cb.get_node_with_size(settings);
     let mut svg = String::new();
@@ -75,6 +76,8 @@ pub fn bob_handler(s: &str, settings: &Settings) -> String {
     )
     .replace("\n", "")
 =======
+=======
+>>>>>>> 1bbd1ff (	modified:   Cargo.toml)
 	let cb = CellBuffer::from(s);
     let (_node, _w, height): (Node<()>, f32, f32) = cb.get_node_with_size(&settings);
 	let svg = svgbob::to_svg_with_settings(s, &settings);
