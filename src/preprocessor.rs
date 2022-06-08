@@ -118,6 +118,7 @@ mod tests {
 		let result = process_code_blocks(&mut chapter, &settings).unwrap();
 		assert!(result.contains("<svg"));
 		assert!(result.contains("<line"));
-		assert!(result.contains("#triangle"));
+		assert!(result.contains("<polygon"));		// note: svgbob @ release 0.5.5 no longer outputs #triangle
+		//	assert!(result.contains("#triangle"));
 	}
 }

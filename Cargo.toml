@@ -18,9 +18,9 @@ include = ["src/**/*", "Cargo.toml", "README.md"]
 maintenance = { status = "passively-maintained" }
 
 [dependencies]
-mdbook = "0.3"
-svgbob = "0.4"
-svg = "0.7"
+mdbook = "0.4.18"
+svgbob = "0.6.6"
+svg = "0.10.0"
 
 clap = "2.33"
 log = "0.4"
