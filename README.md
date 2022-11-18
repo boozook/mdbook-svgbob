@@ -1,83 +1,77 @@
 # Svgbob plugin for mdbook
 
-[![Crate current version badge](https://img.shields.io/crates/v/mdbook-svgbob.svg)](https://crates.io/crates/mdbook-svgbob)
-![](https://github.com/fzzr-/mdbook-svgbob/workflows/Tests/badge.svg)
-![](https://github.com/fzzr-/mdbook-svgbob/workflows/Audit/badge.svg)
-
 [Svgbob][]-based preprocessor for [mdbook][] transform your ascii diagrams into a svg.
+
+This renders a code-block marked `bob` into neat svg diagrams and inline it into the output.
 
 
 ## Usage
 
-
-### Prerequisites
-
-- Install [Rust][] toolchain via [Rustup][]
-- [mdbook][], just run `cargo install mdbook`
-
-
-### Installation
-
-Get latest release:
-
-```bash
-cargo install mdbook-svgbob
-```
-
-Or install from the git mirror:
-
-```bash
-cargo install --git https://github.com/fzzr-/mdbook-svgbob.git
-```
-
-If you want to contribute I recommend to get sources from pj repo:
-
-```bash
-# install pijul if needed
-cargo install pijul
-pijul clone nest.pijul.com:fzzr/mdbook-svgbob
-cargo install --path mdbook-svgbob
-```
-
-
-### Integration
-
-Add the preprocessor into your book manifest:
+Firstly add the following to your book's manifest file
+(usually `book.toml`)
 
 ```toml
-# book.toml
-
-[preprocessor.svgbob]
-text_width = 8.0
-text_height = 16.0
-class = "bob"
-font_family = "arial"
-font_size = 14.0
-stroke_width = 2.0
-# there's using css-variables from theme:
-stroke_color = "var(--fg)" # see default theme / variables.css
-background_color = "transparent" # also useful `var(--bg)`
-# all properties are optional.
+[preprocessor.svgbob] # all fields by default
 ```
+See [config](#config) for more information.
 
-Then add code-block to some chapter:
 
+Add some ascii graphics:
+
+_chapter_1.md_
 ````md
-<!-- chapter_1.md -->
-
 ```bob
-                                   .------------>-----------------.
-       ┌-------------┐  .-.   .-.  |   ┌------┐  .-.   ┌-----┐    |    .-.   ┌------┐
-  O-╮--| struct_name |-( : )-( | )-╰-╮-| name |-( : )--| tpe |--╮-╯---( | )--| body |--╭---O
-    |  └-------------┘  `-'   `-'    | └------┘  `-'   └-----┘  |      `-'   └------┘  |
-    |                                |                    .-.   |                      |
-    |                                `------------<------( , )--'                      |
-    |                                                     `-'                          |
-    `----------------------------------------------------------------------------------'
+    0       3
+     *-------*      +y
+  1 /|    2 /|       ^
+   *-------* |       |
+   | |4    | |7      | ◄╮
+   | *-----|-*     ⤹ +-----> +x
+   |/      |/       / ⤴
+   *-------*       v
+  5       6      +z
 ```
 ````
 
-That's all. ♥️
+Build your book and open:
+```
+mdbook build
+open book/index.html
+```
+
+### Config
+
+Default preprocessor config:
+
+```toml
+[preprocessor.svgbob]
+# svgbob configuration:
+# doc: https://docs.rs/svgbob/latest/svgbob/struct.Settings.html
+# default values: https://github.com/ivanceras/svgbob/blob/master/packages/svgbob/src/settings.rs#L29-L38
+font_size = 14
+font_family = "Iosevka Fixed, monospace"
+fill_color = "black"
+background = "transparent"               # default overridden, differs from svgbob's default
+stroke_color = "var(--fg)"               # default overridden, differs from svgbob's default
+stroke_width = 2.0
+scale = 8.0
+enhance_circuitries = true
+include_backdrop = true
+include_styles = true
+include_defs = true
+merge_line_with_shapes = false
+
+# preprocessor configuration:
+code_block = "bob"                       # render only code-blocks marked as "bob", e.g.: ```bob
+```
+
+All properties are optional.
+
+See [svgbob's settings doc](https://docs.rs/svgbob/latest/svgbob/struct.Settings.html) and [default values](https://github.com/ivanceras/svgbob/blob/master/packages/svgbob/src/settings.rs#L29-L38]).
+
+
+- - -
+
 
 For more information about mdbook see [mdbook manual][mdbook.manual],
 [svgbob spec][svgbob.spec] and [editor][svgbob.editor].
@@ -85,8 +79,9 @@ For more information about mdbook see [mdbook manual][mdbook.manual],
 
 ## Contribution
 
-Contributions are highly appreciated and encouraged!
+Contributions are appreciated.
 Don't hesitate to participate to discussions in the issues, propose new features and ask for help.
+
 
 Useful hint for one-command builds crate + book:
 

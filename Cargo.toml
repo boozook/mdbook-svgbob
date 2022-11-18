@@ -1,36 +1,41 @@
 [package]
 name = "mdbook-svgbob"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Alex Koz. <a@koz.email>"]
 description = "SvgBob mdbook preprocessor which swaps code-blocks with neat SVG."
 homepage = "https://nest.pijul.com/fzzr/mdbook-svgbob"
-repository = "https://github.com/fzzr-/mdbook-svgbob.git"
+repository = "https://github.com/boozook/mdbook-svgbob.git"
 keywords = ["mdbook", "markdown", "ascii", "svg", "bob"]
 categories = ["command-line-utilities", "text-processing", "visualization"]
 
-edition = "2018"
+edition = "2021"
 
 readme = "README.md"
 license = "MPL-2.0"
-license-file = "LICENSE"
 
-include = ["src/**/*", "Cargo.toml", "README.md"]
 
 [badges]
 maintenance = { status = "passively-maintained" }
 
-[dependencies]
-mdbook = "0.3"
-svgbob = "0.4"
-svg = "0.7"
 
-clap = "2.33"
+[dependencies]
+mdbook = "0.4"
+svgbob = "0.6"
+svg = "0.12"
+
 log = "0.4"
-env_logger = "0.7"
-semver = "0.9.0"
+env_logger = "0.9"
+semver = "1.0"
 
 toml = "0.5"
-serde = "1.0"
 serde_json = "1.0"
-pulldown-cmark = "0.7"
-pulldown-cmark-to-cmark = "3.0"
+pulldown-cmark = "0.9"
+pulldown-cmark-to-cmark = "10.0"
+
+[dependencies.clap]
+version = "4.0"
+features = ["std", "derive", "cargo", "unicode", "error-context"]
+
+[dependencies.serde]
+version = "1.0"
+features = ["derive"]

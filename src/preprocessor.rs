@@ -8,6 +8,8 @@ use mdbook::preprocess::{CmdPreprocessor, Preprocessor, PreprocessorContext};
 
 use crate::Result;
 use crate::svgbob::*;
+use crate::cfg::Cfg;
+
 
 /// Svgbob preprocessor for mdbook.
 pub struct Bob;
@@ -15,6 +17,7 @@ pub struct Bob;
 impl Bob {
 	pub fn new() -> Self { Self }
 
+	#[allow(dead_code)]
 	pub fn handle_preprocessing(&self) -> Result {
 		use std::io::{stdin, stdout};
 		use semver::{Version, VersionReq};
@@ -38,25 +41,32 @@ impl Bob {
 	}
 }
 
+
 impl Preprocessor for Bob {
 	fn name(&self) -> &str { "svgbob" }
+
+	// Any possible renderer is supported because we're including svg into md source, so it all on md-renderer.
+	// It can be just html or any other such as epub or pdf.
+	// TODO: Maybe declare list of known supported renderers?
 	fn supports_renderer(&self, renderer: &str) -> bool { renderer != "not-supported" }
 
+
 	fn run(&self, ctx: &PreprocessorContext, mut book: Book) -> Result<Book, Error> {
-		let settings = ctx.config
-		                  .get_preprocessor(self.name())
-		                  .map(cfg_to_settings)
-		                  .unwrap_or_default();
+		let cfg: Cfg = {
+			               ctx.config
+			                  .get_preprocessor(self.name())
+			                  .and_then(|map| map.try_into().map_err(|err| error!("{}", err)).ok())
+		               }.unwrap_or_default();
 
 		book.for_each_mut(|item| {
 			    if let BookItem::Chapter(chapter) = item {
-				    let _ = process_code_blocks(chapter, &settings).map(|s| {
-					                                                   chapter.content = s;
-					                                                   trace!("chapter '{}' processed", &chapter.name);
-				                                                   })
-				                                                   .map_err(|err| {
-					                                                   error!("{}", err);
-				                                                   });
+				    let _ = process_code_blocks(chapter, &cfg).map(|s| {
+					                                              chapter.content = s;
+					                                              trace!("chapter '{}' processed", &chapter.name);
+				                                              })
+				                                              .map_err(|err| {
+					                                              error!("{}", err);
+				                                              });
 			    }
 		    });
 		Ok(book)
@@ -65,9 +75,9 @@ impl Preprocessor for Bob {
 
 
 /// Find code-blocks \`\`\`bob, produce svg and place it instead code.
-fn process_code_blocks(chapter: &mut Chapter, settings: &Settings) -> Result<String, std::fmt::Error> {
+fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::fmt::Error> {
 	use pulldown_cmark::{Parser, CodeBlockKind, Event, CowStr, Tag};
-	use pulldown_cmark_to_cmark::fmt::cmark;
+	use pulldown_cmark_to_cmark::cmark;
 
 	enum State {
 		None,
@@ -77,47 +87,49 @@ fn process_code_blocks(chapter: &mut Chapter, settings: &Settings) -> Result<Str
 
 	let mut state = State::None;
 	let mut buf = String::with_capacity(chapter.content.len());
-	let events = Parser::new(&chapter.content).map(|e| {
-		                                          use State::*;
-		                                          use Event::*;
-		                                          use CowStr::*;
-		                                          use CodeBlockKind::*;
-		                                          use Tag::{CodeBlock, Paragraph};
+	let events =
+		Parser::new(&chapter.content).map(|e| {
+			                             use State::*;
+			                             use Event::*;
+			                             use CowStr::*;
+			                             use CodeBlockKind::*;
+			                             use Tag::{CodeBlock, Paragraph};
 
-		                                          match (&e, &mut state) {
-			                                          (Start(CodeBlock(Fenced(Borrowed("bob")))), None) => {
-			                                             state = Open;
-			                                             Some(Start(Paragraph))
-		                                             },
+			                             match (&e, &mut state) {
+				                             (Start(CodeBlock(Fenced(Borrowed(mark)))), None) if mark == &cfg.code_block => {
+				                                state = Open;
+				                                Some(Start(Paragraph))
+			                                },
 
-		                                             (Text(Borrowed(text)), Open) => {
-			                                             state = Closing;
-			                                             Some(Html(bob_handler(text, settings).into()))
-		                                             },
+			                                (Text(Borrowed(text)), Open) => {
+				                                state = Closing;
+				                                Some(Html(bob_handler(text, &cfg.settings).into()))
+			                                },
 
-		                                             (End(CodeBlock(Fenced(Borrowed("bob")))), Closing) => {
-			                                             state = None;
-			                                             Some(End(Paragraph))
-		                                             },
-		                                             _ => Some(e),
-		                                          }
-	                                          })
-	                                          .filter_map(|e| e);
-	cmark(events, &mut buf, None).map(|_| buf)
+			                                (End(CodeBlock(Fenced(Borrowed(mark)))), Closing) if mark == &cfg.code_block => {
+				                                state = None;
+				                                Some(End(Paragraph))
+			                                },
+			                                _ => Some(e),
+			                             }
+		                             })
+		                             .flatten();
+	cmark(events, &mut buf).map(|_| buf)
 }
 
 
 #[cfg(test)]
 mod tests {
+
 	#[test]
 	fn process_code_blocks() {
-		use super::{Settings, Chapter, process_code_blocks};
+		use super::{Cfg, Chapter, process_code_blocks};
 
-		let settings = Settings::default();
+		let settings = Cfg::default();
 		let mut chapter = Chapter::new("test", "```bob\n-->\n```".to_owned(), ".", Vec::with_capacity(0));
 		let result = process_code_blocks(&mut chapter, &settings).unwrap();
 		assert!(result.contains("<svg"));
 		assert!(result.contains("<line"));
-		assert!(result.contains("#triangle"));
+		assert!(result.contains("#arrow"));
 	}
 }
