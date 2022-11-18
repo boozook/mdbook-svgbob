@@ -27,7 +27,6 @@ jobs:
           profile: minimal
           components: rustfmt
           override: false
-          allow-downgrade: false
 
       - name: Cache
         uses: actions/cache@v3
