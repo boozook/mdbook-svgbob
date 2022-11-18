@@ -48,7 +48,7 @@ jobs:
       - if: matrix.os == 'ubuntu-latest'
         run: sudo chown -R $(whoami):$(id -ng) ~/.cargo/
 
-      - name: Restore cargo cache from cache
+      - name: Cargo Cache
         uses: actions/cache@v3
         with:
           path: |
