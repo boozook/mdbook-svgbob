@@ -26,29 +26,16 @@ jobs:
       RUST_LOG: info,mdbook_svgbob=trace
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      # We need to disable the existing toolchain to avoid updating rust-docs
-      # which takes a long time. The fastest way to do this is to rename the
-      # existing folder, as deleting it takes about as much time as not doing
-      # anything and just updating rust-docs.
-      - name: Rename existing rust toolchain (Windows)
-        if: matrix.os == 'windows-latest'
-        run: Rename-Item C:\Users\runneradmin\.rustup\toolchains\stable-x86_64-pc-windows-msvc C:\Users\runneradmin\.rustup\toolchains\stable-x86_64-pc-windows-msvc.old
-
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1.0.6
-        with:
-          toolchain: stable
-          profile: minimal
-          components: clippy
-          override: true
+      - name: Rust toolchain
+        run: rustup default nightly
 
       - if: matrix.os == 'ubuntu-latest'
         run: sudo chown -R $(whoami):$(id -ng) ~/.cargo/
 
-      - name: Cargo Cache
+      - name: Cache
         uses: actions/cache@v3
         with:
           path: |
@@ -60,12 +47,59 @@ jobs:
           key: ${{ runner.os }}-cargo
 
       - name: Tests
-        uses: actions-rs/cargo@v1.0.1
-        with:
-          command: test
-          args: --all --tests --no-fail-fast -- --nocapture
+        run: cargo test --all --tests --no-fail-fast -- --nocapture
 
-      - name: Clippy
-        uses: actions-rs/cargo@v1.0.1
+  style:
+    name: Style
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Rust toolchain
+        run: rustup default nightly
+
+      - name: Cache
+        uses: actions/cache@v3
         with:
-          command: clippy
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo
+
+      - name: Install Clippy
+        run: |
+          rustup component add clippy
+          rustup component add rustfmt
+
+      - name: Check Format
+        shell: bash
+        run: cargo +nightly fmt -- --check
+
+      - name: Install Tools
+        uses: taiki-e/install-action@v1.14.0
+        with: { tool: "clippy-sarif,sarif-fmt" }
+        continue-on-error: true
+
+      - name: Install Clippy Sarif
+        run: which clippy-sarif || cargo install clippy-sarif sarif-fmt
+
+      - name: Check Clippy
+        run: cargo clippy --message-format=json
+          --all --all-features --all-targets |
+          clippy-sarif | tee clippy.sarif | sarif-fmt
+        continue-on-error: true
+
+      - name: Upload
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: clippy.sarif
+          wait-for-processing: true
