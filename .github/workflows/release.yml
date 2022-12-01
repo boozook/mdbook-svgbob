@@ -24,8 +24,8 @@ jobs:
       CARGO_NET_RETRY: 100
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v3
 
     # We need to disable the existing toolchain to avoid updating rust-docs
     # which takes a long time. The fastest way to do this is to rename the
@@ -84,8 +84,8 @@ jobs:
     name: Upload Artifacts
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v3
 
     - name: Get artifacts (macOS)
       uses: actions/download-artifact@v1
@@ -162,8 +162,8 @@ jobs:
       fail-fast: true
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v3
 
     - name: Publish crate
       uses: actions-rs/cargo@v1.0.1
