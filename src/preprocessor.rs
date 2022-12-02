@@ -93,30 +93,30 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
 	let parser = mdbook::utils::new_cmark_parser(&chapter.content, false);
 	// #[allow(clippy::unnecessary_filter_map)]
 	let events = parser.filter_map(|e| {
-		                use State::*;
-		                use Event::*;
-		                use CowStr::*;
-		                use CodeBlockKind::*;
-		                use Tag::{CodeBlock, Paragraph};
+		                   use State::*;
+		                   use Event::*;
+		                   use CowStr::*;
+		                   use CodeBlockKind::*;
+		                   use Tag::{CodeBlock, Paragraph};
 
-		                match (&e, &mut state) {
-			                (Start(CodeBlock(Fenced(Borrowed(mark)))), None) if mark == &cfg.code_block => {
-			                   state = Open;
-			                   Some(Start(Paragraph))
-		                   },
+		                   match (&e, &mut state) {
+			                   (Start(CodeBlock(Fenced(Borrowed(mark)))), None) if mark == &cfg.code_block => {
+			                      state = Open;
+			                      Some(Start(Paragraph))
+		                      },
 
-		                   (Text(Borrowed(text)), Open) => {
-			                   state = Closing;
-			                   Some(Html(bob_handler(text, &cfg.settings).into()))
-		                   },
+		                      (Text(Borrowed(text)), Open) => {
+			                      state = Closing;
+			                      Some(Html(bob_handler(text, &cfg.settings).into()))
+		                      },
 
-		                   (End(CodeBlock(Fenced(Borrowed(mark)))), Closing) if mark == &cfg.code_block => {
-			                   state = None;
-			                   Some(End(Paragraph))
-		                   },
-		                   _ => Some(e),
-		                }
-	                });
+		                      (End(CodeBlock(Fenced(Borrowed(mark)))), Closing) if mark == &cfg.code_block => {
+			                      state = None;
+			                      Some(End(Paragraph))
+		                      },
+		                      _ => Some(e),
+		                   }
+	                   });
 	cmark(events, &mut buf).map(|_| buf)
 }
 
