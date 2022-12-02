@@ -73,10 +73,9 @@ impl Preprocessor for Bob {
 	}
 }
 
-
 /// Find code-blocks \`\`\`bob, produce svg and place it instead code.
 fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::fmt::Error> {
-	use pulldown_cmark::{Parser, CodeBlockKind, Event, CowStr, Tag};
+	use pulldown_cmark::{CodeBlockKind, Event, CowStr, Tag};
 	use pulldown_cmark_to_cmark::cmark;
 
 	enum State {
@@ -87,36 +86,39 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
 
 	let mut state = State::None;
 	let mut buf = String::with_capacity(chapter.content.len());
-	let events =
-		Parser::new(&chapter.content).map(|e| {
-			                             use State::*;
-			                             use Event::*;
-			                             use CowStr::*;
-			                             use CodeBlockKind::*;
-			                             use Tag::{CodeBlock, Paragraph};
+	// The curly_quotes setting is left at false so that people can
+	// set it in book.toml (mdBook will apply the setting when it
+	// parses our output). It is important to use new_cmark_parser so
+	// that we parse things like tables consistently with mdBook.
+	let parser = mdbook::utils::new_cmark_parser(&chapter.content, false);
+	let events = parser.map(|e| {
+		                   use State::*;
+		                   use Event::*;
+		                   use CowStr::*;
+		                   use CodeBlockKind::*;
+		                   use Tag::{CodeBlock, Paragraph};
 
-			                             match (&e, &mut state) {
-				                             (Start(CodeBlock(Fenced(Borrowed(mark)))), None) if mark == &cfg.code_block => {
-				                                state = Open;
-				                                Some(Start(Paragraph))
-			                                },
+		                   match (&e, &mut state) {
+			                   (Start(CodeBlock(Fenced(Borrowed(mark)))), None) if mark == &cfg.code_block => {
+			                      state = Open;
+			                      Some(Start(Paragraph))
+		                      },
 
-			                                (Text(Borrowed(text)), Open) => {
-				                                state = Closing;
-				                                Some(Html(bob_handler(text, &cfg.settings).into()))
-			                                },
+		                      (Text(Borrowed(text)), Open) => {
+			                      state = Closing;
+			                      Some(Html(bob_handler(text, &cfg.settings).into()))
+		                      },
 
-			                                (End(CodeBlock(Fenced(Borrowed(mark)))), Closing) if mark == &cfg.code_block => {
-				                                state = None;
-				                                Some(End(Paragraph))
-			                                },
-			                                _ => Some(e),
-			                             }
-		                             })
-		                             .flatten();
+		                      (End(CodeBlock(Fenced(Borrowed(mark)))), Closing) if mark == &cfg.code_block => {
+			                      state = None;
+			                      Some(End(Paragraph))
+		                      },
+		                      _ => Some(e),
+		                   }
+	                   })
+	                   .flatten();
 	cmark(events, &mut buf).map(|_| buf)
 }
-
 
 #[cfg(test)]
 mod tests {
