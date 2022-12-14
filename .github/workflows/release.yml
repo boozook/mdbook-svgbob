@@ -1,175 +1,109 @@
-name: Build Release
+name: Release
 on:
   push:
     tags:
-    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   build:
-    name: Build Release Artifacts
-    runs-on: ${{ matrix.os }}
-
+    name: Build Binary for ${{ matrix.target }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        os:
-        - macos-latest
-        - ubuntu-latest
-        - windows-latest
-
+        target:
+          - x86_64-unknown-linux-gnu
+          - x86_64-unknown-linux-musl
+          - x86_64-apple-darwin
+          - aarch64-apple-darwin
+          - x86_64-pc-windows-msvc
+        # This expands the matrix variables for the target
+        # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs#expanding-or-adding-matrix-configurations
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-20.04
+            name: x86_64-unknown-linux-gnu.tar.gz
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            name: x86_64-unknown-linux-musl.tar.gz
+          - target: x86_64-apple-darwin
+            os: macOS-latest
+            name: x86_64-apple-darwin.tar.gz
+          - target: aarch64-apple-darwin
+            os: macOS-latest
+            name: aarch64-apple-darwin.tar.gz
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            name: x86_64-pc-windows-msvc.zip
+    runs-on: ${{ matrix.os }}
     env:
       RUST_BACKTRACE: full
       CARGO_INCREMENTAL: 0
       RUSTUP_MAX_RETRIES: 100
       CARGO_NET_RETRY: 100
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    # We need to disable the existing toolchain to avoid updating rust-docs
-    # which takes a long time. The fastest way to do this is to rename the
-    # existing folder, as deleting it takes about as much time as not doing
-    # anything and just updating rust-docs.
-    - name: Rename existing rust toolchain (Windows)
-      if: matrix.os == 'windows-latest'
-      run: Rename-Item C:\Users\runneradmin\.rustup\toolchains\stable-x86_64-pc-windows-msvc C:\Users\runneradmin\.rustup\toolchains\stable-x86_64-pc-windows-msvc.old
-
-    - name: Install Rust toolchain
-      uses: actions-rs/toolchain@v1.0.6
-      with:
-        toolchain: stable
-        profile: minimal
-        override: true
-
-    - if: matrix.os == 'ubuntu-latest'
-      run: sudo chown -R $(whoami):$(id -ng) ~/.cargo/
-
-    - name: Restore cargo cache from cache
-      uses: actions/cache@v1
-      with:
-        path: ~/.cargo
-        key: ${{ runner.os }}-cargo
-        restore-keys: |
-          ${{ runner.os }}-cargo
-
-    - name: Tests
-      uses: actions-rs/cargo@v1.0.1
-      with:
-        command: test
-        args: --all
-
-    - name: Build
-      shell: bash
-      run: cargo build --all --release
-
-    - name: Archive
-      if: matrix.os != 'windows-latest'
-      run: zip --junk-paths mdbook-svgbob-${{ runner.os }}.zip LICENSE README.md target/release/mdbook-svgbob
-    - name: Archive (win)
-      if: matrix.os == 'windows-latest'
-      uses: papeloto/action-zip@v1
-      with:
-        files: LICENSE README.md target/release/mdbook-svgbob.exe
-        dest: mdbook-svgbob-${{ runner.os }}.zip
-
-    - uses: actions/upload-artifact@master
-      with:
-        name: mdbook-svgbob-${{ runner.os }}
-        path: mdbook-svgbob-${{ runner.os }}.zip
-
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Extract Tag
+        id: tag
+        run: echo "NAME=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+      # This action will care about the caching of ~/.cargo and ./target
+      - name: Setup Cache for Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          # Github cache doesn't work with parallel access - first access wins
+          prefix-key: "rust-${{ matrix.target }}"
+      - name: Setup Rust for ${{ matrix.target }}
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          target: ${{ matrix.target }}
+      - name: Install dependencies for musl build
+        if: matrix.target == 'x86_64-unknown-linux-musl'
+        run: sudo apt install -y musl-tools
+      - name: Build Binary
+        run: cargo build --release --target ${{ matrix.target }}
+      - name: Archive Binary
+        if: matrix.os != 'windows-latest'
+        working-directory: target/${{ matrix.target }}/release/
+        run: |
+          strip mdbook-svgbob
+          tar czvf ../../../mdbook-svgbob-${{ steps.tag.outputs.name }}-${{ matrix.name }} mdbook-svgbob
+      - name: Archive Binary (windows)
+        if: matrix.os == 'windows-latest'
+        working-directory: target/${{ matrix.target }}/release/
+        run: |
+          strip mdbook-svgbob.exe
+          7z a ../../../mdbook-svgbob-${{ steps.tag.outputs.name }}-${{ matrix.name }} mdbook-svgbob.exe
+      - name: Upload Archive as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          if-no-files-found: error
+          name: mdbook-svgbob-${{ steps.tag.outputs.name }}-${{ matrix.name }}
+          path: mdbook-svgbob-${{ steps.tag.outputs.name }}-${{ matrix.name }}
 
   release:
     needs: build
-    name: Upload Artifacts
+    name: Create Github Release
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Get artifacts (macOS)
-      uses: actions/download-artifact@v1
-      with:
-        name: mdbook-svgbob-macOS
-        path: artifacts/
-
-    - name: Get artifacts (Linux)
-      uses: actions/download-artifact@v1
-      with:
-        name: mdbook-svgbob-Linux
-        path: artifacts/
-
-    - name: Get artifacts (Windows)
-      uses: actions/download-artifact@v1
-      with:
-        name: mdbook-svgbob-Windows
-        path: artifacts/
-
-    - name: Extract the version tag
-      id: version_tag
-      # or ${GITHUB_REF##*/}
-      shell: bash
-      run: echo ::set-output name=value::$(echo $GITHUB_REF | cut -d / -f 3)
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ github.ref }}
-        draft: true
-        prerelease: true
-
-    - name: Upload Release Asset (linux)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include an `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/mdbook-svgbob-Linux.zip
-        asset_name: mdbook-svgbob-${{ steps.version_tag.outputs.value }}-linux.zip
-        asset_content_type: application/zip
-
-    - name: Upload Release Asset (mac)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/mdbook-svgbob-macOS.zip
-        asset_name: mdbook-svgbob-${{ steps.version_tag.outputs.value }}-macos.zip
-        asset_content_type: application/zip
-
-    - name: Upload Release Asset (win)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: artifacts/mdbook-svgbob-Windows.zip
-        asset_name: mdbook-svgbob-${{ steps.version_tag.outputs.value }}-windows.zip
-        asset_content_type: application/zip
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get Artifacts
+        uses: actions/download-artifact@v3
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: mdbook-svgbob-*/mdbook-svgbob-*
 
   publish:
-    name: publish
+    name: Publish to crates.io
     needs: release
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: true
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Publish crate
-      uses: actions-rs/cargo@v1.0.1
-      env:
-        CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      with:
-        toolchain: stable
-        command: publish
-        # args: --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Publish crate
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish
