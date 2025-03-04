@@ -85,7 +85,7 @@ jobs:
         run: cargo +nightly fmt -- --check
 
       - name: Install Tools
-        uses: taiki-e/install-action@v1.14.0
+        uses: taiki-e/install-action@v2.49.11
         with: { tool: "clippy-sarif,sarif-fmt" }
         continue-on-error: true
 
