@@ -36,7 +36,7 @@ jobs:
       run: Rename-Item C:\Users\runneradmin\.rustup\toolchains\stable-x86_64-pc-windows-msvc C:\Users\runneradmin\.rustup\toolchains\stable-x86_64-pc-windows-msvc.old
 
     - name: Install Rust toolchain
-      uses: actions-rs/toolchain@v1.0.6
+      uses: actions-rs/toolchain@v1.0.7
       with:
         toolchain: stable
         profile: minimal
