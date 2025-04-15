@@ -20,7 +20,7 @@ maintenance = { status = "passively-maintained" }
 
 [dependencies]
 mdbook = "0.4.37"
-svgbob = "0.6"
+svgbob = "0.7"
 svg = "0.12"
 
 log = "0.4"
