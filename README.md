@@ -55,11 +55,9 @@ background = "transparent"               # default overridden, differs from svgb
 stroke_color = "var(--fg)"               # default overridden, differs from svgbob's default
 stroke_width = 2.0
 scale = 8.0
-enhance_circuitries = true
 include_backdrop = true
 include_styles = true
 include_defs = true
-merge_line_with_shapes = false
 
 # preprocessor configuration:
 code_block = "bob"                       # render only code-blocks marked as "bob", e.g.: ```bob
