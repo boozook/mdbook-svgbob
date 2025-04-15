@@ -28,14 +28,14 @@ env_logger = "0.11"
 semver = "1.0"
 
 toml = "0.5"
-serde_json = "1.0"
+serde_json = "1.0.140"
 pulldown-cmark = "0.10"
 pulldown-cmark-to-cmark = "14.0"
 
 [dependencies.clap]
-version = "4.0"
+version = "4.5.36"
 features = ["std", "derive", "cargo", "unicode", "error-context"]
 
 [dependencies.serde]
-version = "1.0"
+version = "1.0.219"
 features = ["derive"]
