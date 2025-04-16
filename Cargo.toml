@@ -19,23 +19,23 @@ maintenance = { status = "passively-maintained" }
 
 
 [dependencies]
-mdbook = "0.4.37"
-svgbob = "0.6"
-svg = "0.12"
+mdbook = "0.4.48"
+svgbob = "0.7.6"
+svg = "0.18.0"
 
-log = "0.4"
-env_logger = "0.11"
-semver = "1.0"
+log = "0.4.27"
+env_logger = "0.11.8"
+semver = "1.0.26"
 
-toml = "0.5"
-serde_json = "1.0"
-pulldown-cmark = "0.10"
-pulldown-cmark-to-cmark = "14.0"
+toml = "0.5.11"
+serde_json = "1.0.140"
+pulldown-cmark = "0.10.3"
+pulldown-cmark-to-cmark = "14.0.1"
 
 [dependencies.clap]
-version = "4.0"
+version = "4.5.36"
 features = ["std", "derive", "cargo", "unicode", "error-context"]
 
 [dependencies.serde]
-version = "1.0"
+version = "1.0.219"
 features = ["derive"]

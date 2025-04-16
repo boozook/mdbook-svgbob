@@ -37,16 +37,12 @@ struct SettingsDe {
 	#[serde(alias = "stroke-width")]
 	pub stroke_width: f32,
 	pub scale: f32,
-	#[serde(alias = "enhance-circuitries")]
-	pub enhance_circuitries: bool,
 	#[serde(alias = "include-backdrop")]
 	pub include_backdrop: bool,
 	#[serde(alias = "include-styles")]
 	pub include_styles: bool,
 	#[serde(alias = "include-defs")]
 	pub include_defs: bool,
-	#[serde(alias = "merge-line-with-shapes")]
-	pub merge_line_with_shapes: bool,
 }
 
 impl Default for SettingsDe {
@@ -70,11 +66,9 @@ impl From<Settings> for SettingsDe {
 		               stroke_color,
 		               stroke_width,
 		               scale,
-		               enhance_circuitries,
 		               include_backdrop,
 		               include_styles,
 		               include_defs,
-		               merge_line_with_shapes,
 		               .. } = settings;
 		Self { font_size,
 		       font_family,
@@ -83,11 +77,9 @@ impl From<Settings> for SettingsDe {
 		       stroke_color,
 		       stroke_width,
 		       scale,
-		       enhance_circuitries,
 		       include_backdrop,
 		       include_styles,
-		       include_defs,
-		       merge_line_with_shapes }
+		       include_defs }
 	}
 }
 
