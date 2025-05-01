@@ -25,7 +25,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     # We need to disable the existing toolchain to avoid updating rust-docs
     # which takes a long time. The fastest way to do this is to rename the
@@ -85,7 +85,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Get artifacts (macOS)
       uses: actions/download-artifact@v4.2.1
@@ -163,7 +163,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Publish crate
       uses: actions-rs/cargo@v1.0.1
