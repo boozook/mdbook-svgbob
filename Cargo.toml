@@ -27,7 +27,7 @@ log = "0.4.27"
 env_logger = "0.11.8"
 semver = "1.0.26"
 
-toml = "0.5.11"
+toml = "0.9.4"
 serde_json = "1.0.140"
 pulldown-cmark = "0.10.3"
 pulldown-cmark-to-cmark = "14.0.1"
