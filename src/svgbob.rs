@@ -1,7 +1,3 @@
-extern crate svg;
-extern crate svgbob;
-extern crate toml;
-
 use svg::node::element::Style;
 use svgbob::CellBuffer;
 use svgbob::Node;

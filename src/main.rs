@@ -1,14 +1,8 @@
-#[macro_use]
-extern crate log;
-extern crate env_logger;
-extern crate mdbook;
-#[macro_use]
-extern crate clap;
-
 use std::error::Error;
 use std::process;
 
-use mdbook::preprocess::Preprocessor;
+use log::error;
+use mdbook_preprocessor::Preprocessor;
 
 mod cfg;
 mod cli;
@@ -24,7 +18,7 @@ fn main() -> Result {
     let bob = preprocessor::Bob::new();
     if let Some(cli::Commands::Supports { renderer }) = opts.command {
         // Signal whether the renderer is supported by exiting with 1 or 0.
-        if bob.supports_renderer(&renderer) {
+        if bob.supports_renderer(&renderer)? {
             process::exit(0);
         } else {
             process::exit(1);
