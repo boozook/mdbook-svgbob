@@ -1,11 +1,6 @@
-extern crate svg;
-extern crate svgbob;
-extern crate toml;
-
 use svg::node::element::Style;
-use svgbob::CellBuffer;
-use svgbob::Node;
 pub use svgbob::Settings;
+use svgbob::{CellBuffer, Node};
 
 /// convert bob ascii diagrams to svg
 pub fn bob_handler(s: &str, settings: &Settings) -> String {

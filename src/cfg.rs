@@ -1,11 +1,10 @@
 use serde::Deserialize;
-pub use svgbob::Settings;
-use toml::value::Table;
-use toml::value::Value;
+use svgbob::Settings;
+use toml::value::{Table, Value};
 
 pub const DEFAULT_CODE_BLOCK: &str = "bob";
 pub const DEFAULT_BACKGROUND: &str = "transparent";
-pub const DEFAULT_STROKE_COLOR: &str = "var(--fg)";
+pub const DEFAULT_STROKE_COLOR: &str = "var(--fg, black)";
 
 #[derive(Debug, Deserialize)]
 pub struct Cfg {
