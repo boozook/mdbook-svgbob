@@ -1,18 +1,13 @@
-extern crate pulldown_cmark;
-extern crate pulldown_cmark_to_cmark;
-extern crate semver;
-
-use mdbook::book::Book;
-use mdbook::book::BookItem;
-use mdbook::book::Chapter;
-use mdbook::errors::Error;
-use mdbook::preprocess::CmdPreprocessor;
-use mdbook::preprocess::Preprocessor;
-use mdbook::preprocess::PreprocessorContext;
-
-use crate::cfg::Cfg;
 use crate::svgbob::*;
 use crate::Result;
+use log::{error, trace, warn};
+use mdbook_driver::book::{Book, BookItem, Chapter};
+use mdbook_preprocessor::{Preprocessor, PreprocessorContext};
+use mdbook_renderer::errors::Error;
+
+use semver::{Version, VersionReq};
+
+use crate::cfg::Cfg;
 
 /// Svgbob preprocessor for mdbook.
 pub struct Bob;
@@ -27,19 +22,16 @@ impl Bob {
         use std::io::stdin;
         use std::io::stdout;
 
-        use semver::Version;
-        use semver::VersionReq;
-
-        let (ctx, book) = CmdPreprocessor::parse_input(stdin())?;
+        let (ctx, book) = mdbook_preprocessor::parse_input(stdin())?;
         let current = Version::parse(&ctx.mdbook_version)?;
-        let built = VersionReq::parse(&format!("~{}", mdbook::MDBOOK_VERSION))?;
+        let built = VersionReq::parse(&format!("~{}", mdbook_renderer::MDBOOK_VERSION))?;
 
-        if ctx.mdbook_version != mdbook::MDBOOK_VERSION && !built.matches(&current) {
+        if ctx.mdbook_version != mdbook_renderer::MDBOOK_VERSION && !built.matches(&current) {
             warn!(
                 "The {} plugin was built against version {} of mdbook, \
 				      but we're being called from version {}, so may be incompatible.",
                 self.name(),
-                mdbook::MDBOOK_VERSION,
+                mdbook_renderer::MDBOOK_VERSION,
                 ctx.mdbook_version
             );
         }
@@ -57,17 +49,16 @@ impl Preprocessor for Bob {
     // Any possible renderer is supported because we're including svg into md source, so it all on md-renderer.
     // It can be just html or any other such as epub or pdf.
     // TODO: Maybe declare list of known supported renderers?
-    fn supports_renderer(&self, renderer: &str) -> bool {
-        renderer != "not-supported"
+    fn supports_renderer(
+        &self,
+        renderer: &str,
+    ) -> Result<bool, mdbook_preprocessor::errors::Error> {
+        Ok(renderer != "not-supported")
     }
 
     fn run(&self, ctx: &PreprocessorContext, mut book: Book) -> Result<Book, Error> {
-        let cfg: Cfg = {
-            ctx.config
-                .get_preprocessor(self.name())
-                .and_then(|map| map.try_into().map_err(|err| error!("{}", err)).ok())
-        }
-        .unwrap_or_default();
+        let cfg: Cfg =
+            { ctx.config.get(&format!("preprocessor.{}", self.name()))? }.unwrap_or_default();
 
         book.for_each_mut(|item| {
             if let BookItem::Chapter(chapter) = item {
@@ -86,12 +77,8 @@ impl Preprocessor for Bob {
 }
 
 /// Find code-blocks \`\`\`bob, produce svg and place it instead code.
-fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::fmt::Error> {
-    use pulldown_cmark::CodeBlockKind;
-    use pulldown_cmark::CowStr;
-    use pulldown_cmark::Event;
-    use pulldown_cmark::Tag;
-    use pulldown_cmark::TagEnd;
+fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, impl std::error::Error> {
+    use pulldown_cmark::{CodeBlockKind, CowStr, Event, Tag, TagEnd};
     use pulldown_cmark_to_cmark::cmark;
 
     enum State {
@@ -106,7 +93,10 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
     // set it in book.toml (mdBook will apply the setting when it
     // parses our output). It is important to use new_cmark_parser so
     // that we parse things like tables consistently with mdBook.
-    let parser = mdbook::utils::new_cmark_parser(&chapter.content, false);
+    let mut md_options = mdbook_markdown::MarkdownOptions::default();
+    md_options.smart_punctuation = false;
+    let parser = mdbook_markdown::new_cmark_parser(&chapter.content, &md_options); // TODO: I assume options are fine here, but I may be wrong
+
     // Clippy false-positive issue:
     // https://github.com/rust-lang/rust-clippy/issues/9211#issuecomment-1335173323
     #[allow(clippy::unnecessary_filter_map)]
@@ -115,8 +105,7 @@ fn process_code_blocks(chapter: &mut Chapter, cfg: &Cfg) -> Result<String, std::
         use CowStr::*;
         use Event::*;
         use State::*;
-        use Tag::CodeBlock;
-        use Tag::Paragraph;
+        use Tag::{CodeBlock, Paragraph};
 
         match (&e, &mut state) {
             (Start(CodeBlock(Fenced(Borrowed(mark)))), None) if mark == &cfg.code_block => {
