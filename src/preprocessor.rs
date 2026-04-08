@@ -132,13 +132,10 @@ fn process_code_blocks(
 
 #[cfg(test)]
 mod tests {
+    use super::*;
 
     #[test]
-    fn process_code_blocks() {
-        use super::Cfg;
-        use super::Chapter;
-        use super::process_code_blocks;
-
+    fn test_process_code_blocks() {
         let settings = Cfg::default();
         let mut chapter = Chapter::new(
             "test",
