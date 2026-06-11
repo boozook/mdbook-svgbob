@@ -27,7 +27,7 @@ svgbob = "0.7.6"
 svg = "0.18.0"
 
 log = "0.4.27"
-env_logger = "0.11.8"
+env_logger = "0.11.10"
 semver = "1.0.28"
 
 toml = "1.1.2"
