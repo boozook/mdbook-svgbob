@@ -6,9 +6,9 @@ use pulldown_cmark::{CodeBlockKind, CowStr, Event, Tag, TagEnd};
 use pulldown_cmark_to_cmark::cmark;
 use semver::{Version, VersionReq};
 
+use crate::Result;
 use crate::cfg::Cfg;
 use crate::svgbob::*;
-use crate::Result;
 
 /// Svgbob preprocessor for mdbook.
 pub struct Bob;
@@ -132,13 +132,10 @@ fn process_code_blocks(
 
 #[cfg(test)]
 mod tests {
+    use super::*;
 
     #[test]
-    fn process_code_blocks() {
-        use super::process_code_blocks;
-        use super::Cfg;
-        use super::Chapter;
-
+    fn test_process_code_blocks() {
         let settings = Cfg::default();
         let mut chapter = Chapter::new(
             "test",
