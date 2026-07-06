@@ -12,7 +12,7 @@ pub fn bob_handler(s: &str, settings: &Settings) -> String {
     svg.render_with_indent(&mut source, 0, true)
         .expect("html render");
 
-    let style = Style::new("svg { width: 100% !important; }").set("type", "text/css");
+    let style = Style::new("svg.svgbob { width: 100% !important; }").set("type", "text/css");
     format!(
         "<div style='width:100%; height:{}px;'>{}{}</div>",
         height, style, source
